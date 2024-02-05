@@ -1,0 +1,38 @@
+---
+config:
+  target: https://api.artic.edu/docs/
+  payload:
+    - path: keywords.csv
+      fields:
+        - keyword1
+defaults:
+  headers:
+    Content-Type: application/json
+  phases:
+    - duration: 10
+      arrivalRate: 2
+hooks:
+  - beforeRequest: hooks/beforeRequest.js
+plugins:
+  - shorthand
+scenarios:
+  - flow:
+      - get:
+          url: /v1/artworks
+        ensure:
+          - isTrue: responseTime <= 500
+          - isTrue: http_req_duration <= 1000
+          - isTrue: body.length > 0
+          - isTrue: status === 200
+      - post:
+          url: /v1/comments
+          json:
+            comment: Testowy komentarz
+        ensure:
+          - isTrue: responseTime <= 1000
+          - isTrue: status === 201
+      - get:
+          url: /v1/artists
+        ensure:
+          - isTrue: responseTime <= 800
+          - isTrue: status === 200
