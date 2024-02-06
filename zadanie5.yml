@@ -1,6 +1,6 @@
 ---
 config:
-  target: https://api.artic.edu/docs/
+  target: https://api.artic.edu/api
   payload:
     - path: keywords.csv
       fields:
@@ -19,20 +19,20 @@ scenarios:
   - flow:
       - get:
           url: /v1/artworks
-        ensure:
-          - isTrue: responseTime <= 500
-          - isTrue: http_req_duration <= 1000
-          - isTrue: body.length > 0
-          - isTrue: status === 200
+          ensure:
+            - isTrue: responseTime <= 500
+            - isTrue: http_req_duration <= 1000
+            - isTrue: body.length > 0
+            - isTrue: status === 200
       - post:
-          url: /v1/comments
+          url: /v1/artworks/search
           json:
-            comment: Testowy komentarz
-        ensure:
-          - isTrue: responseTime <= 1000
-          - isTrue: status === 201
+            q: "{{ keyword1}}"
+          ensure:
+            - isTrue: responseTime <= 1000
+            - isTrue: status === 200
       - get:
           url: /v1/artists
-        ensure:
-          - isTrue: responseTime <= 800
-          - isTrue: status === 200
+          ensure:
+            - isTrue: responseTime <= 800
+            - isTrue: status === 200
